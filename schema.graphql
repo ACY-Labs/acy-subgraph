@@ -27,9 +27,13 @@ type Order @entity {
   triggerPrice: BigInt!
 }
 
-type Transaction @entity {
-  id: ID!  # key
+type Account @entity {
+  id: ID!  # address
+  transactions : [Transaction!]!
+}
 
+type Transaction @entity {
+  id: ID!  # hash
   account: String!
   indexToken: String!
   indexTokenSymbol: String!  # e.g. "BTC"
