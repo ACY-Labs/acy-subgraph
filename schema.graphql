@@ -25,6 +25,7 @@ type Order @entity {
   sizeDelta: BigInt!
   isLong: Boolean!
   triggerPrice: BigInt!
+  triggerAboveThreshold: Boolean!
 }
 
 type Account @entity {

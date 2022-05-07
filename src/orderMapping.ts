@@ -35,7 +35,8 @@ function _handleCreateOrder(
   indexToken: string, 
   sizeDelta: BigInt,
   isLong: boolean,
-  triggerPrice: BigInt
+  triggerPrice: BigInt,
+  triggerAboveThreshold: boolean
   ): void {
   let id = _getId(account, type, orderIndex);
   let order = new Order(id);
@@ -49,6 +50,7 @@ function _handleCreateOrder(
   order.sizeDelta = sizeDelta;
   order.isLong = isLong;
   order.triggerPrice = triggerPrice;
+  order.triggerAboveThreshold = triggerAboveThreshold;
 
   order.save();
 }
@@ -81,7 +83,8 @@ export function handleCreateIncreaseOrder(event: CreateIncreaseOrder): void {
     event.params.indexToken.toHexString(),
     event.params.sizeDelta,
     event.params.isLong,
-    event.params.triggerPrice
+    event.params.triggerPrice,
+    event.params.triggerAboveThreshold
   );
 }
 
@@ -93,7 +96,8 @@ export function handleCreateDecreaseOrder(event: CreateDecreaseOrder): void {
     event.params.indexToken.toHexString(),
     event.params.sizeDelta,
     event.params.isLong,
-    event.params.triggerPrice
+    event.params.triggerPrice,
+    event.params.triggerAboveThreshold
   );
 }
 
