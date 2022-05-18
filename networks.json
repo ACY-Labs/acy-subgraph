@@ -7,6 +7,26 @@
     "OrderBook": {
       "address": "0x64109736f6ccf5f8D5fCF7CBbbc38ec6aB6198FD",
       "startBlock": 26176749
+    },
+    "ChainlinkAggregatorBTC": {
+      "address": "0x6A0B57F750F66F07a3b30ED7F49Bf7C3245A9D99",
+      "startBlock": 20000000
+    },
+    "ChainlinkAggregatorETH": {
+      "address": "0x4b387f15D803eB6635C37A2B51e0E487c11C3b79",
+      "startBlock": 20000000
+    },
+    "ChainlinkAggregatorUSDC": {
+      "address": "0xFadfF79bA04F169386646a43869B66B39c7E0858",
+      "startBlock": 20000000
+    },
+    "ChainlinkAggregatorUSDT": {
+      "address": "0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06",
+      "startBlock": 20000000
+    },
+    "ChainlinkAggregatorMATIC": {
+      "address": "0xaF5F268198929283927a9a427C62772D0d9dFc00",
+      "startBlock": 20000000
     }
   }
 }

@@ -147,3 +147,103 @@ dataSources:
         - event: UpdateSwapOrder(indexed address,uint256,address[],uint256,uint256,uint256,bool,bool,uint256)
           handler: handleUpdateSwapOrder
       file: ./src/orderMapping.ts
+  - kind: ethereum
+    name: ChainlinkAggregatorBTC
+    network: mumbai
+    source:
+      address: "0x6A0B57F750F66F07a3b30ED7F49Bf7C3245A9D99"
+      abi: ChainlinkAggregator
+      startBlock: 20000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - ChainlinkPrice
+      abis:
+        - name: ChainlinkAggregator
+          file: ./abis/ChainlinkAggregator.json
+      eventHandlers:
+        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+          handler: handleAnswerUpdatedBTC
+      file: ./src/pricesMapping.ts
+  - kind: ethereum
+    name: ChainlinkAggregatorETH
+    network: mumbai
+    source:
+      address: "0x4b387f15D803eB6635C37A2B51e0E487c11C3b79"
+      abi: ChainlinkAggregator
+      startBlock: 20000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - ChainlinkPrice
+      abis:
+        - name: ChainlinkAggregator
+          file: ./abis/ChainlinkAggregator.json
+      eventHandlers:
+        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+          handler: handleAnswerUpdatedETH
+      file: ./src/pricesMapping.ts
+  - kind: ethereum
+    name: ChainlinkAggregatorUSDC
+    network: mumbai
+    source:
+      address: "0xFadfF79bA04F169386646a43869B66B39c7E0858"
+      abi: ChainlinkAggregator
+      startBlock: 20000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - ChainlinkPrice
+      abis:
+        - name: ChainlinkAggregator
+          file: ./abis/ChainlinkAggregator.json
+      eventHandlers:
+        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+          handler: handleAnswerUpdatedUSDC
+      file: ./src/pricesMapping.ts
+  - kind: ethereum
+    name: ChainlinkAggregatorUSDT
+    network: mumbai
+    source:
+      address: "0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06"
+      abi: ChainlinkAggregator
+      startBlock: 20000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - ChainlinkPrice
+      abis:
+        - name: ChainlinkAggregator
+          file: ./abis/ChainlinkAggregator.json
+      eventHandlers:
+        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+          handler: handleAnswerUpdatedUSDT
+      file: ./src/pricesMapping.ts
+  - kind: ethereum
+    name: ChainlinkAggregatorMATIC
+    network: mumbai
+    source:
+      address: "0xaF5F268198929283927a9a427C62772D0d9dFc00"
+      abi: ChainlinkAggregator
+      startBlock: 20000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - ChainlinkPrice
+      abis:
+        - name: ChainlinkAggregator
+          file: ./abis/ChainlinkAggregator.json
+      eventHandlers:
+        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+          handler: handleAnswerUpdatedMATIC
+      file: ./src/pricesMapping.ts

@@ -42,3 +42,17 @@ type Transaction @entity {
   isLong: Boolean!
   price: BigInt!
 }
+
+
+enum PricePeriod {
+  any
+  last
+}
+
+type ChainlinkPrice @entity {
+  id: ID!
+  token: String!
+  value: BigInt!
+  timestamp: Int!
+  period: PricePeriod!
+}
