@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.5
 schema:
   file: ./schema.graphql
 dataSources:
@@ -6,77 +6,83 @@ dataSources:
     name: Vault
     network: mumbai
     source:
-      address: "0x14d92826376F57c065Fe0804314A2BFA860EF08c"
+      address: "0x52f0D817F698A3712Ac88c1A84E1f51d248f030e"
       abi: Vault
-      startBlock: 26176714
+      startBlock: 26458777
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - BuyUSDG
+        - BuyUSDA
         - ClosePosition
         - CollectMarginFees
         - CollectSwapFees
-        - DecreaseGuaranteedUsd
+        - DecreaseGlobalNetUsd
+        - DecreaseNetPosition
         - DecreasePoolAmount
         - DecreasePosition
         - DecreaseReservedAmount
-        - DecreaseUsdgAmount
+        - DecreaseUsdaAmount
         - DirectPoolDeposit
-        - IncreaseGuaranteedUsd
+        - IncreaseGlobalNetUsd
+        - IncreaseNetPosition
         - IncreasePoolAmount
         - IncreasePosition
         - IncreaseReservedAmount
-        - IncreaseUsdgAmount
+        - IncreaseUsdaAmount
         - LiquidatePosition
-        - SellUSDG
+        - SellUSDA
         - Swap
-        - UpdateFundingRate
+        - UpdateBorrowRate
         - UpdatePnl
         - UpdatePosition
       abis:
         - name: Vault
           file: ./abis/Vault.json
       eventHandlers:
-        - event: BuyUSDG(address,address,uint256,uint256,uint256)
-          handler: handleBuyUSDG
+        - event: BuyUSDA(address,address,uint256,uint256,uint256)
+          handler: handleBuyUSDA
         - event: ClosePosition(bytes32,uint256,uint256,uint256,uint256,uint256,int256)
           handler: handleClosePosition
         - event: CollectMarginFees(address,uint256,uint256)
           handler: handleCollectMarginFees
         - event: CollectSwapFees(address,uint256,uint256)
           handler: handleCollectSwapFees
-        - event: DecreaseGuaranteedUsd(address,uint256)
-          handler: handleDecreaseGuaranteedUsd
+        - event: DecreaseGlobalNetUsd(address,uint256)
+          handler: handleDecreaseGlobalNetUsd
+        - event: DecreaseNetPosition(address,uint256)
+          handler: handleDecreaseNetPosition
         - event: DecreasePoolAmount(address,uint256)
           handler: handleDecreasePoolAmount
         - event: DecreasePosition(bytes32,address,address,address,uint256,uint256,bool,uint256,uint256)
           handler: handleDecreasePosition
         - event: DecreaseReservedAmount(address,uint256)
           handler: handleDecreaseReservedAmount
-        - event: DecreaseUsdgAmount(address,uint256)
-          handler: handleDecreaseUsdgAmount
+        - event: DecreaseUsdaAmount(address,uint256)
+          handler: handleDecreaseUsdaAmount
         - event: DirectPoolDeposit(address,uint256)
           handler: handleDirectPoolDeposit
-        - event: IncreaseGuaranteedUsd(address,uint256)
-          handler: handleIncreaseGuaranteedUsd
+        - event: IncreaseGlobalNetUsd(address,uint256)
+          handler: handleIncreaseGlobalNetUsd
+        - event: IncreaseNetPosition(address,uint256)
+          handler: handleIncreaseNetPosition
         - event: IncreasePoolAmount(address,uint256)
           handler: handleIncreasePoolAmount
         - event: IncreasePosition(bytes32,address,address,address,uint256,uint256,bool,uint256,uint256)
           handler: handleIncreasePosition
         - event: IncreaseReservedAmount(address,uint256)
           handler: handleIncreaseReservedAmount
-        - event: IncreaseUsdgAmount(address,uint256)
-          handler: handleIncreaseUsdgAmount
+        - event: IncreaseUsdaAmount(address,uint256)
+          handler: handleIncreaseUsdaAmount
         - event: LiquidatePosition(bytes32,address,address,address,bool,uint256,uint256,uint256,int256,uint256)
           handler: handleLiquidatePosition
-        - event: SellUSDG(address,address,uint256,uint256,uint256)
-          handler: handleSellUSDG
+        - event: SellUSDA(address,address,uint256,uint256,uint256)
+          handler: handleSellUSDA
         - event: Swap(address,address,address,uint256,uint256,uint256,uint256)
           handler: handleSwap
-        - event: UpdateFundingRate(address,uint256)
-          handler: handleUpdateFundingRate
+        - event: UpdateBorrowRate(address,uint256)
+          handler: handleUpdateBorrowRate
         - event: UpdatePnl(bytes32,bool,uint256)
           handler: handleUpdatePnl
         - event: UpdatePosition(bytes32,uint256,uint256,uint256,uint256,uint256,int256,uint256)
@@ -88,7 +94,7 @@ dataSources:
     source:
       address: "0x64109736f6ccf5f8D5fCF7CBbbc38ec6aB6198FD"
       abi: OrderBook
-      startBlock: 26176749
+      startBlock: 26458777
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -153,7 +159,7 @@ dataSources:
     source:
       address: "0x6A0B57F750F66F07a3b30ED7F49Bf7C3245A9D99"
       abi: ChainlinkAggregator
-      startBlock: 20000000
+      startBlock: 26457000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -173,7 +179,7 @@ dataSources:
     source:
       address: "0x4b387f15D803eB6635C37A2B51e0E487c11C3b79"
       abi: ChainlinkAggregator
-      startBlock: 20000000
+      startBlock: 26457000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -193,7 +199,7 @@ dataSources:
     source:
       address: "0xFadfF79bA04F169386646a43869B66B39c7E0858"
       abi: ChainlinkAggregator
-      startBlock: 20000000
+      startBlock: 26457000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -213,7 +219,7 @@ dataSources:
     source:
       address: "0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06"
       abi: ChainlinkAggregator
-      startBlock: 20000000
+      startBlock: 26457000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -233,7 +239,7 @@ dataSources:
     source:
       address: "0xaF5F268198929283927a9a427C62772D0d9dFc00"
       abi: ChainlinkAggregator
-      startBlock: 20000000
+      startBlock: 26457000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -247,3 +253,26 @@ dataSources:
         - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
           handler: handleAnswerUpdatedMATIC
       file: ./src/pricesMapping.ts
+  - kind: ethereum
+    name: alpManager
+    network: mumbai
+    source:
+      address: "0xf48EbF4d387a156BCAAE2932f113587aeF7a5573"
+      abi: alpManager
+      startBlock: 26457000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - AddLiquidity
+        - RemoveLiquidity
+      abis:
+        - name: alpManager
+          file: ./abis/alpManager.json
+      eventHandlers:
+        - event: AddLiquidity(address,address,uint256,uint256,uint256,uint256,uint256)
+          handler: handleAddLiquidity
+        - event: RemoveLiquidity(address,address,uint256,uint256,uint256,uint256,uint256)
+          handler: handleRemoveLiquidity
+      file: ./src/alp-manager.ts

@@ -96,38 +96,40 @@ export function handleDecreasePoolAmount(event: DecreasePoolAmount): void {
   _updatePoolAmount(timestamp, "weekly", token, totalEntity.poolAmount, totalEntity.poolAmountUsd);
 
   //calcualte alp price
-  let amountUsd = getTokenAmountUsd(token.toHexString(), event.params.amount)
-  let alpTotalEntity = _getOrCreateAlpStat("total", "total")
-  let alpSupply = alpTotalEntity.alpSupply
-  if(alpSupply != ZERO) {
-    let value = amountUsd/alpSupply // 30 decimals / 18 decimals = 12 decimals
-    _decreaseChainlinkPrice(ALP, value, event.block.timestamp)
-  }
+  // let amountUsd = getTokenAmountUsd(token.toHexString(), event.params.amount)
+  // let alpTotalEntity = _getOrCreateAlpStat("total", "total")
+  // let alpSupply = alpTotalEntity.alpSupply
+  // if(alpSupply != ZERO) {
+  //   let value = amountUsd/alpSupply // 30 decimals / 18 decimals = 12 decimals
+  //   _decreaseChainlinkPrice(ALP, value, event.block.timestamp)
+  // } else {
+  //   _storeChainlinkPrice(ALP, ZERO, event.block.timestamp)
+  // }
 }
 
 export function handleDecreasePosition(event: DecreasePositionEvent): void {
     // 创建新的 Transaction
-  let txEntity = new Transaction(event.transaction.hash.toHexString());
-  txEntity.account = event.params.account.toHexString();
-  txEntity.indexToken = event.params.indexToken.toHexString();
-  txEntity.indexTokenSymbol = getTokenSymbol(event.params.indexToken.toHexString());
-  txEntity.sizeDelta = event.params.sizeDelta;
-  txEntity.isLong = event.params.isLong;
-  txEntity.price = event.params.price;
-  txEntity.save();
+  // let txEntity = new Transaction(event.transaction.hash.toHexString());
+  // txEntity.account = event.params.account.toHexString();
+  // txEntity.indexToken = event.params.indexToken.toHexString();
+  // txEntity.indexTokenSymbol = getTokenSymbol(event.params.indexToken.toHexString());
+  // txEntity.sizeDelta = event.params.sizeDelta;
+  // txEntity.isLong = event.params.isLong;
+  // txEntity.price = event.params.price;
+  // txEntity.save();
 
-  let accountId = event.params.account.toHexString();
-  let accountEntity = Account.load(accountId);
-  if(accountEntity == null){
-    let accountEntity = new Account(accountId);
-    accountEntity.transactions = [txEntity.id];
-    accountEntity.save();
-  }else {
-    let txs = accountEntity.transactions;
-    txs.push(txEntity.id);
-    accountEntity.transactions = txs;
-    accountEntity.save();
-  }
+  // let accountId = event.params.account.toHexString();
+  // let accountEntity = Account.load(accountId);
+  // if(accountEntity == null){
+  //   let accountEntity = new Account(accountId);
+  //   accountEntity.transactions = [txEntity.id];
+  //   accountEntity.save();
+  // }else {
+  //   let txs = accountEntity.transactions;
+  //   txs.push(txEntity.id);
+  //   accountEntity.transactions = txs;
+  //   accountEntity.save();
+  // }
 }
 
 export function handleDecreaseReservedAmount(event: DecreaseReservedAmount): void {}
@@ -152,47 +154,49 @@ export function handleIncreasePoolAmount(event: IncreasePoolAmount): void {
   _updatePoolAmount(timestamp, "daily", token, totalEntity.poolAmount, totalEntity.poolAmountUsd);
   _updatePoolAmount(timestamp, "weekly", token, totalEntity.poolAmount, totalEntity.poolAmountUsd);
 
-  // calcualte alp price
-  let amountUsd = getTokenAmountUsd(token.toHexString(), event.params.amount)
-  let alpTotalEntity = _getOrCreateAlpStat("total", "total")
-  let alpSupply = alpTotalEntity.alpSupply
-  if(alpSupply != ZERO) {
-    let value = amountUsd/alpSupply // 30 decimals / 18 decimals
-    _increaseChainlinkPrice(ALP, value, event.block.timestamp)
-  }
+  //calcualte alp price
+  // let amountUsd = getTokenAmountUsd(token.toHexString(), event.params.amount)
+  // let alpTotalEntity = _getOrCreateAlpStat("total", "total")
+  // let alpSupply = alpTotalEntity.alpSupply
+  // if(alpSupply != ZERO) {
+  //   let value = amountUsd/alpSupply // 30 decimals / 18 decimals
+  //   _increaseChainlinkPrice(ALP, value, event.block.timestamp)
+  // } else {
+  //   _storeChainlinkPrice(ALP, ZERO, event.block.timestamp)
+  // }
 }
 
 export function handleIncreasePosition(event: IncreasePositionEvent): void {
     // 创建新的 or 更新 ActivePosition
-  let positionEntity = new ActivePosition(event.params.key.toHexString());
-  positionEntity.account = event.params.account.toHexString();
-  positionEntity.collateralToken = event.params.collateralToken.toHexString();
-  positionEntity.indexToken = event.params.indexToken.toHexString();
-  positionEntity.isLong = event.params.isLong;
-  positionEntity.save();
+  // let positionEntity = new ActivePosition(event.params.key.toHexString());
+  // positionEntity.account = event.params.account.toHexString();
+  // positionEntity.collateralToken = event.params.collateralToken.toHexString();
+  // positionEntity.indexToken = event.params.indexToken.toHexString();
+  // positionEntity.isLong = event.params.isLong;
+  // positionEntity.save();
 
-  // 创建新的 Transaction
-  let txEntity = new Transaction(event.transaction.hash.toHexString());
-  txEntity.account = event.params.account.toHexString();
-  txEntity.indexToken = event.params.indexToken.toHexString();
-  txEntity.indexTokenSymbol = getTokenSymbol(event.params.indexToken.toHexString());
-  txEntity.sizeDelta = event.params.sizeDelta;
-  txEntity.isLong = event.params.isLong;
-  txEntity.price = event.params.price;
-  txEntity.save();
+  // // 创建新的 Transaction
+  // let txEntity = new Transaction(event.transaction.hash.toHexString());
+  // txEntity.account = event.params.account.toHexString();
+  // txEntity.indexToken = event.params.indexToken.toHexString();
+  // txEntity.indexTokenSymbol = getTokenSymbol(event.params.indexToken.toHexString());
+  // txEntity.sizeDelta = event.params.sizeDelta;
+  // txEntity.isLong = event.params.isLong;
+  // txEntity.price = event.params.price;
+  // txEntity.save();
 
-  let accountId = event.params.account.toHexString();
-  let accountEntity = Account.load(accountId);
-  if(accountEntity == null){
-    let accountEntity = new Account(accountId);
-    accountEntity.transactions = [txEntity.id];
-    accountEntity.save();
-  } else {
-    let txs = accountEntity.transactions;
-    txs.push(txEntity.id);
-    accountEntity.transactions = txs;
-    accountEntity.save();
-  }
+  // let accountId = event.params.account.toHexString();
+  // let accountEntity = Account.load(accountId);
+  // if(accountEntity == null){
+  //   let accountEntity = new Account(accountId);
+  //   accountEntity.transactions = [txEntity.id];
+  //   accountEntity.save();
+  // } else {
+  //   let txs = accountEntity.transactions;
+  //   txs.push(txEntity.id);
+  //   accountEntity.transactions = txs;
+  //   accountEntity.save();
+  // }
 }
 
 export function handleIncreaseReservedAmount(event: IncreaseReservedAmount): void {}
@@ -201,8 +205,8 @@ export function handleIncreaseUsdaAmount(event: IncreaseUsdaAmount): void {}
 
 export function handleLiquidatePosition(event: LiquidatePosition): void {
   // remove ActivePosition
-  // let id = event.params.key.toHexString();
-  // store.remove('ActivePosition', id);
+  let id = event.params.key.toHexString();
+  store.remove('ActivePosition', id);
 }
 
 export function handleSellUSDA(event: SellUSDA): void {
