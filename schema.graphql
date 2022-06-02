@@ -35,6 +35,7 @@ type Account @entity {
 
 type Transaction @entity {
   id: ID!  # hash
+  timestamp : BigInt!
   account: String!
   indexToken: String!
   indexTokenSymbol: String!  # e.g. "BTC"
