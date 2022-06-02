@@ -70,6 +70,7 @@ export function handleIncreasePosition(event: IncreasePosition): void {
 
   // 创建新的 Transaction
   let txEntity = new Transaction(event.transaction.hash.toHexString());
+  txEntity.timestamp = event.block.timestamp;
   txEntity.account = event.params.account.toHexString();
   txEntity.indexToken = event.params.indexToken.toHexString();
   txEntity.indexTokenSymbol = getTokenSymbol(event.params.indexToken.toHexString());
@@ -95,6 +96,7 @@ export function handleIncreasePosition(event: IncreasePosition): void {
 export function handleDecreasePosition(event: DecreasePosition): void {
   // 创建新的 Transaction
   let txEntity = new Transaction(event.transaction.hash.toHexString());
+  txEntity.timestamp = event.block.timestamp;
   txEntity.account = event.params.account.toHexString();
   txEntity.indexToken = event.params.indexToken.toHexString();
   txEntity.indexTokenSymbol = getTokenSymbol(event.params.indexToken.toHexString());
