@@ -30,12 +30,12 @@ type Order @entity {
 
 type Account @entity {
   id: ID!  # address
-  transactions : [Transaction!]!
+  transactions: [Transaction!]!
 }
 
 type Transaction @entity {
   id: ID!  # hash
-  timestamp : BigInt!
+  timestamp: BigInt!
   account: String!
   indexToken: String!
   indexTokenSymbol: String!  # e.g. "BTC"
