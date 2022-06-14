@@ -1,4 +1,4 @@
-import { BigInt, TypedMap } from "@graphprotocol/graph-ts"
+import { BigInt, TypedMap, ethereum } from "@graphprotocol/graph-ts"
 import {
   ChainlinkPrice,
 } from "../generated/schema"
@@ -13,7 +13,7 @@ export const USDT = "0x158653b66fd72555F68eDf983736781E471639Cc";
 export const WETH = "0xeBC8428DC717D440d5deCE1547456B115b868F0e";
 export const WBTC = "0x05d6f705C80d9F812d9bc1A142A655CDb25e2571";
 export const WMATIC = "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889";
-export const ALP = "0xDE209aa7D120046F67076A837b0c98901E69b996";
+export const ALP = "0x53a2eD45d06518f903782134aB28C0E99E3C3A13";
 
 export function timestampToDay(timestamp: BigInt): BigInt {
   return timestamp / BigInt.fromI32(86400) * BigInt.fromI32(86400)

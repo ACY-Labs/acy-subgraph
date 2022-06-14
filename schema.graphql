@@ -135,12 +135,12 @@ type FastPrice @entity {
   period: PricePeriod!
 }
 
-type FundingRate @entity {
+type BorrowRate @entity {
   id: ID!
 
-  startFundingRate: Int!
+  startBorrowRate: Int!
   startTimestamp: Int!
-  endFundingRate: Int!
+  endBorrowRate: Int!
   endTimestamp: Int!
   token: String!
   timestamp: Int
@@ -233,6 +233,14 @@ type AlpStat @entity {
   timestamp: Int
 }
 
+type OnChainTransaction @entity {
+  id: ID!
+  blockNumber: Int!
+  timestamp: Int!
+  from: String!
+  to: String!
+}
+
 type Swap @entity {
   id: ID!
 
@@ -247,7 +255,7 @@ type Swap @entity {
 
   tokenInPrice: BigInt!
 
-  transaction: Transaction!
+  transaction: OnChainTransaction!
 
   timestamp: Int!
 }
@@ -322,6 +330,32 @@ type FeeStat @entity {
   liquidation: BigInt! # deprecated. it's calculated incorrectly
   mint: BigInt!
   burn: BigInt!
+  period: Period!
+}
+
+type OpeningPosition @entity {
+  id: ID! # key
+  averagePrice: BigInt!
+  entryBorrowRate: BigInt!
+  collateral: BigInt!
+  size: BigInt!
+}
+
+type OrderStat @entity {
+  id: ID!
+
+  openSwap: Int!
+  openIncrease: Int!
+  openDecrease: Int!
+
+  cancelledSwap: Int!
+  cancelledIncrease: Int!
+  cancelledDecrease: Int!
+
+  executedSwap: Int!
+  executedIncrease: Int!
+  executedDecrease: Int!
+
   period: Period!
 }
 

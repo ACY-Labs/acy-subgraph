@@ -6,7 +6,7 @@ dataSources:
     name: Vault
     network: mumbai
     source:
-      address: "0x52f0D817F698A3712Ac88c1A84E1f51d248f030e"
+      address: "0x24B918F5ee6E8Fc464a0fBBf5F5433C39a2e6522"
       abi: Vault
       startBlock: 26458777
     mapping:
@@ -92,7 +92,7 @@ dataSources:
     name: OrderBook
     network: mumbai
     source:
-      address: "0x64109736f6ccf5f8D5fCF7CBbbc38ec6aB6198FD"
+      address: "0xE94F622C0403d6f9eD86B8502F4765f7eF38b646"
       abi: OrderBook
       startBlock: 26458777
     mapping:
@@ -257,7 +257,7 @@ dataSources:
     name: alpManager
     network: mumbai
     source:
-      address: "0xf48EbF4d387a156BCAAE2932f113587aeF7a5573"
+      address: "0x267DE43231876eEeB9a3E81ADc5AE65e976B4b60"
       abi: alpManager
       startBlock: 26457000
     mapping:

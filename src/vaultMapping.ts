@@ -22,7 +22,7 @@ import {
   IncreaseUsdaAmount,
   LiquidatePosition,
   SellUSDA,
-  Swap,
+  Swap as SwapEvent,
   UpdateBorrowRate,
   UpdatePnl,
   UpdatePosition
@@ -41,7 +41,13 @@ import {
   UserData,
   TokenStat,
   TokenPool,
-  AlpStat
+  AlpStat,
+  Swap,
+  OnChainTransaction,
+  HourlyVolumeByToken,
+  OpeningPosition,
+  BorrowRate,
+  LiquidatedPosition
  } from "../generated/schema"
 import { getTokenSymbol, ALP } from "./tokenList"
 import { 
@@ -53,9 +59,13 @@ import {
   getHourId,
   getIdFromEvent,
   TRADE_TYPES,
-  ZERO
+  ZERO,
+  getTokenDecimals,
+  getTokenPrice,
+  FUNDING_PRECISION
 } from "./helper"
 
+import { LIQUIDATOR_ADDRESS } from "./constants"
 
 export function handleBuyUSDA(event: BuyUSDA): void {
   let volume = event.params.usdaAmount * BigInt.fromString("1000000000000")
@@ -73,9 +83,13 @@ export function handleClosePosition(event: ClosePosition): void {
   store.remove('ActivePosition', id);
 }
 
-export function handleCollectMarginFees(event: CollectMarginFees): void {}
+export function handleCollectMarginFees(event: CollectMarginFees): void {
+  _storeFees("marginAndLiquidation", event.block.timestamp, event.params.feeUsd)
+}
 
-export function handleCollectSwapFees(event: CollectSwapFees): void {}
+export function handleCollectSwapFees(event: CollectSwapFees): void {
+
+}
 
 export function handleDecreaseGlobalNetUsd(event: DecreaseGlobalNetUsd): void {
 
@@ -106,6 +120,28 @@ export function handleDecreasePoolAmount(event: DecreasePoolAmount): void {
 }
 
 export function handleDecreasePosition(event: DecreasePositionEvent): void {
+
+  _storeVolume("margin", event.block.timestamp, event.params.sizeDelta)
+  _storeVolumeBySource("margin", event.block.timestamp, event.transaction.to, event.params.sizeDelta)
+  _storeVolumeByToken("margin", event.block.timestamp, event.params.collateralToken, event.params.indexToken, event.params.sizeDelta)
+  _storeFees("margin", event.block.timestamp, event.params.fee)
+  _storeUserAction(event.block.timestamp, event.params.account, "margin")
+
+  if (event.transaction.from.toHexString() == LIQUIDATOR_ADDRESS) {
+    _storeLiquidatedPosition(
+      event.params.key,
+      event.block.timestamp,
+      event.params.account,
+      event.params.indexToken,
+      event.params.sizeDelta,
+      event.params.collateralToken,
+      event.params.collateralDelta,
+      event.params.isLong,
+      "partial",
+      event.params.price
+    )
+  }
+
     // 创建新的 Transaction
   let txEntity = new Transaction(event.transaction.hash.toHexString());
   txEntity.account = event.params.account.toHexString();
@@ -163,6 +199,13 @@ export function handleIncreasePoolAmount(event: IncreasePoolAmount): void {
 }
 
 export function handleIncreasePosition(event: IncreasePositionEvent): void {
+
+  _storeVolume("margin", event.block.timestamp, event.params.sizeDelta)
+  _storeVolumeBySource("margin", event.block.timestamp, event.transaction.to, event.params.sizeDelta)
+  _storeVolumeByToken("margin", event.block.timestamp, event.params.collateralToken, event.params.indexToken, event.params.sizeDelta)
+  _storeFees("margin", event.block.timestamp, event.params.fee)
+  _storeUserAction(event.block.timestamp, event.params.account, "margin")
+
     // 创建新的 or 更新 ActivePosition
   let positionEntity = new ActivePosition(event.params.key.toHexString());
   positionEntity.account = event.params.account.toHexString();
@@ -201,8 +244,8 @@ export function handleIncreaseUsdaAmount(event: IncreaseUsdaAmount): void {}
 
 export function handleLiquidatePosition(event: LiquidatePosition): void {
   // remove ActivePosition
-  // let id = event.params.key.toHexString();
-  // store.remove('ActivePosition', id);
+  let id = event.params.key.toHexString();
+  store.remove('ActivePosition', id);
 }
 
 export function handleSellUSDA(event: SellUSDA): void {
@@ -215,13 +258,63 @@ export function handleSellUSDA(event: SellUSDA): void {
   _storeUserAction(event.block.timestamp, event.params.account, "mintBurn")
 }
 
-export function handleSwap(event: Swap): void {}
+export function handleSwap(event: SwapEvent): void {
+}
 
-export function handleUpdateBorrowRate(event: UpdateBorrowRate): void {}
+export function handleUpdateBorrowRate(event: UpdateBorrowRate): void {
+  const FUNDING_INTERVAL = 3600
+  let fundingIntervalTimestamp = event.block.timestamp.toI32() / FUNDING_INTERVAL * FUNDING_INTERVAL
+
+  let timestamp = getDayId(event.block.timestamp)
+  let id = _getBorrowRateId(timestamp, event.params.token)
+  let entity = BorrowRate.load(id)
+
+  let totalId = _getBorrowRateId("total", event.params.token)
+  let totalEntity = BorrowRate.load(totalId)
+
+  if (entity == null) {
+    entity = new BorrowRate(id)
+    if (totalEntity) {
+      entity.startBorrowRate = totalEntity.endBorrowRate
+      entity.startTimestamp = totalEntity.endTimestamp
+    } else {
+      entity.startBorrowRate = 0
+      entity.startTimestamp = fundingIntervalTimestamp
+    }
+    entity.timestamp = BigInt.fromString(timestamp).toI32()
+    entity.token = event.params.token.toHexString()
+    entity.period = "daily"
+  }
+  entity.endBorrowRate = event.params.borrowRate.toI32()
+  entity.endTimestamp = fundingIntervalTimestamp
+  entity.save()
+
+  if (totalEntity == null) {
+    totalEntity = new BorrowRate(totalId)
+    totalEntity.period = "total"
+    totalEntity.startBorrowRate = 0
+    totalEntity.token = event.params.token.toHexString()
+    totalEntity.startTimestamp = fundingIntervalTimestamp
+  }
+  totalEntity.endBorrowRate = event.params.borrowRate.toI32()
+  totalEntity.timestamp = BigInt.fromString(timestamp).toI32()
+  totalEntity.endTimestamp = fundingIntervalTimestamp
+  totalEntity.save()
+}
+function _getBorrowRateId(timeKey: string, token: Address): string {
+  return timeKey + ":" + token.toHexString()
+}
 
 export function handleUpdatePnl(event: UpdatePnl): void {}
 
-export function handleUpdatePosition(event: UpdatePosition): void {}
+export function handleUpdatePosition(event: UpdatePosition): void {
+  let entity = new OpeningPosition(event.params.key.toHexString())
+  entity.averagePrice = event.params.averagePrice
+  entity.entryBorrowRate = event.params.entryFundingRate
+  entity.collateral = event.params.collateral
+  entity.size = event.params.size
+  entity.save()
+}
 
 function _storeChainlinkPrice(token: string, value: BigInt, timestamp: BigInt): void {
   let id = token + ":" + timestamp.toString();
@@ -361,6 +454,25 @@ function _getOrCreateVolumeStat(id: string, period: string): VolumeStat {
     entity.period = period
   }
   return entity as VolumeStat
+}
+
+function _storeVolumeByToken(type: string, timestamp: BigInt, tokenA: Address, tokenB: Address, volume: BigInt): void {
+  let id = getHourId(timestamp) + ":" + tokenA.toHexString() + ":" + tokenB.toHexString()
+  let entity = HourlyVolumeByToken.load(id)
+
+  if (entity == null) {
+    entity = new HourlyVolumeByToken(id)
+    entity.tokenA = tokenA
+    entity.tokenB = tokenB
+    entity.timestamp = timestamp.toI32() / 3600 * 3600
+    for (let i = 0; i < TRADE_TYPES.length; i++) {
+      let _type = TRADE_TYPES[i]
+      entity.setBigInt(_type, ZERO)
+    }
+  }
+
+  entity.setBigInt(type, entity.getBigInt(type) + volume)
+  entity.save()
 }
 
 
@@ -550,6 +662,49 @@ function _getOrCreateAlpStat(id: string, period: string): AlpStat {
     // entity.timestamp = timestamp
   }
   return entity as AlpStat
+}
+
+function _storeLiquidatedPosition(
+  keyBytes: Bytes,
+  timestamp: BigInt,
+  account: Address,
+  indexToken: Address,
+  size: BigInt,
+  collateralToken: Address,
+  collateral: BigInt,
+  isLong: boolean,
+  type: string,
+  markPrice: BigInt
+): void {
+  let key = keyBytes.toHexString()
+  let position = OpeningPosition.load(key)
+  if(position == null) return;
+  let averagePrice = position.averagePrice
+
+  let id = key + ":" + timestamp.toString()
+  let liquidatedPosition = new LiquidatedPosition(id)
+  liquidatedPosition.account = account.toHexString()
+  liquidatedPosition.timestamp = timestamp.toI32()
+  liquidatedPosition.indexToken = indexToken.toHexString()
+  liquidatedPosition.size = size
+  liquidatedPosition.collateralToken = collateralToken.toHexString()
+  liquidatedPosition.collateral = position.collateral
+  liquidatedPosition.isLong = isLong
+  liquidatedPosition.type = type
+  liquidatedPosition.key = key
+
+  liquidatedPosition.markPrice = markPrice
+  liquidatedPosition.averagePrice = averagePrice
+  let priceDelta = isLong ? averagePrice - markPrice : markPrice - averagePrice
+  liquidatedPosition.loss = size * priceDelta / averagePrice
+
+  let borrowRateId = _getBorrowRateId("total", collateralToken)
+  let borrowRateEntity = BorrowRate.load(borrowRateId)
+  if(borrowRateEntity == null) return
+  let accruedBorrowRate = BigInt.fromI32(borrowRateEntity.endBorrowRate) - position.entryBorrowRate
+  liquidatedPosition.borrowFee = accruedBorrowRate * size / FUNDING_PRECISION
+
+  liquidatedPosition.save()
 }
 
 
