@@ -18,6 +18,7 @@ dataSources:
         - ClosePosition
         - CollectMarginFees
         - CollectSwapFees
+        - DecreaseCollateralsPool
         - DecreaseGlobalNetUsd
         - DecreaseNetPosition
         - DecreasePoolAmount
@@ -25,6 +26,7 @@ dataSources:
         - DecreaseReservedAmount
         - DecreaseUsdaAmount
         - DirectPoolDeposit
+        - IncreaseCollateralsPool
         - IncreaseGlobalNetUsd
         - IncreaseNetPosition
         - IncreasePoolAmount
@@ -49,6 +51,8 @@ dataSources:
           handler: handleCollectMarginFees
         - event: CollectSwapFees(address,uint256,uint256)
           handler: handleCollectSwapFees
+        - event: DecreaseCollateralsPool(address,uint256)
+          handler: handleDecreaseCollateralsPool
         - event: DecreaseGlobalNetUsd(address,uint256)
           handler: handleDecreaseGlobalNetUsd
         - event: DecreaseNetPosition(address,uint256)
@@ -63,6 +67,8 @@ dataSources:
           handler: handleDecreaseUsdaAmount
         - event: DirectPoolDeposit(address,uint256)
           handler: handleDirectPoolDeposit
+        - event: IncreaseCollateralsPool(address,uint256)
+          handler: handleIncreaseCollateralsPool
         - event: IncreaseGlobalNetUsd(address,uint256)
           handler: handleIncreaseGlobalNetUsd
         - event: IncreaseNetPosition(address,uint256)

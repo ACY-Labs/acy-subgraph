@@ -62,21 +62,20 @@ enum TokenPoolPeriod {
   last
 }
 
+enum PoolType {
+  collateralsPool,
+  netPosition,
+  globalNetUsd
+}
+
 type TokenPool @entity {
   id: ID!
   token: String!
   amount: BigInt!
   timestamp: Int!
-  period: TokenPoolPeriod!
+  type: PoolType!
 }
 
-type NetPosition @entity {
-  id: ID!
-  token: String!
-  amount: BigInt!
-  timestamp: Int!
-  period: TokenPoolPeriod!
-}
 type WhitelistedToken @entity {
   id: ID!
   foo: String!
@@ -358,4 +357,5 @@ type OrderStat @entity {
 
   period: Period!
 }
+
 

@@ -7,6 +7,7 @@ import {
   ClosePosition,
   CollectMarginFees,
   CollectSwapFees,
+  DecreaseCollateralsPool,
   DecreaseGlobalNetUsd,
   DecreaseNetPosition,
   DecreasePoolAmount,
@@ -14,6 +15,7 @@ import {
   DecreaseReservedAmount,
   DecreaseUsdaAmount,
   DirectPoolDeposit,
+  IncreaseCollateralsPool,
   IncreaseGlobalNetUsd,
   IncreaseNetPosition,
   IncreasePoolAmount,
@@ -316,6 +318,24 @@ export function handleUpdatePosition(event: UpdatePosition): void {
   entity.save()
 }
 
+export function handleIncreaseCollateralsPool(event: IncreaseCollateralsPool): void {
+  _updateTokenPool(event.params.token, event.params.amount, "collateralsPool", event.block.timestamp)
+  _updateAlpPrice(ALP, -event.params.amount, event.block.timestamp)
+}
+
+
+export function handleDecreaseCollateralsPool(event: DecreaseCollateralsPool): void {
+  _updateTokenPool(event.params.token, -event.params.amount, "collateralsPool", event.block.timestamp)
+  _updateAlpPrice(ALP, event.params.amount, event.block.timestamp)
+}
+
+function _updateTokenPool(token: Address, delta: BigInt, type: string, timestamp: BigInt): void {
+  let entity = _getOrCreateTokenPool(token, type);
+  entity.amount += delta;
+  entity.timestamp = timestamp.toI32();
+  entity.save();
+} 
+
 function _storeChainlinkPrice(token: string, value: BigInt, timestamp: BigInt): void {
   let id = token + ":" + timestamp.toString();
   let entity = new ChainlinkPrice(id);
@@ -356,10 +376,38 @@ function _increaseChainlinkPrice(token: string, value: BigInt, timestamp: BigInt
 
 function _decreaseChainlinkPrice(token: string, value: BigInt, timestamp: BigInt): void {
 
+
   // update latest price of this token
   let latestId = token;
   let latestEntity =  _getOrCreateChainlinkPrice(latestId, token);
   latestEntity.value -= value
+  latestEntity.timestamp = timestamp.toI32();
+  latestEntity.save();
+
+
+  let id = token + ":" + timestamp.toString();
+  let entity = new ChainlinkPrice(id);
+  entity.token = token;
+  entity.value = latestEntity.value;
+  entity.timestamp = timestamp.toI32();
+  entity.period = "any";
+  entity.save();
+}
+
+function _updateAlpPrice(token: string, aumInUsdaDelta: BigInt, timestamp: BigInt): void {
+
+
+  let alpTotalEntity = _getOrCreateAlpStat("total", "total")
+  let alpSupply = alpTotalEntity.alpSupply
+  if(alpSupply == ZERO) {
+    return
+  }
+  let delta = aumInUsdaDelta/alpSupply // 30 decimals / 18 decimals
+
+  // update latest price of this token
+  let latestId = token;
+  let latestEntity =  _getOrCreateChainlinkPrice(latestId, token);
+  latestEntity.value += delta;
   latestEntity.timestamp = timestamp.toI32();
   latestEntity.save();
 
@@ -705,6 +753,19 @@ function _storeLiquidatedPosition(
   liquidatedPosition.borrowFee = accruedBorrowRate * size / FUNDING_PRECISION
 
   liquidatedPosition.save()
+}
+
+function _getOrCreateTokenPool(token: Address, type: string ): TokenPool {
+  let id = token.toHexString() + ':' + type
+  let entity = TokenPool.load(id)
+  if (entity === null) {
+    entity = new TokenPool(id)
+    entity.token = token.toHexString()
+    entity.amount = ZERO
+    entity.timestamp = ZERO.toI32()
+    entity.type = type
+  }
+  return entity as TokenPool
 }
 
 
